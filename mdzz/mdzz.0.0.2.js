@@ -1,5 +1,5 @@
 /*! Copyright (c) 2018 Luuljh (https://mdzz.lljh.bid)
- * Version: 0.0.1
+ * Version: 0.0.2
  */
 function mdzz(u,options){
 	if (u==true) {
