@@ -96,6 +96,8 @@ function mdzz_go(u){
 			xmlhttp.open("GET",u,true);
 			xmlhttp.setRequestHeader("Cache-Control","no-cache");
 		}
+	}else{
+		xmlhttp.open("GET",u,true);
 	}
 	xmlhttp.onreadystatechange=function(){
 		if (xmlhttp.readyState==4){
