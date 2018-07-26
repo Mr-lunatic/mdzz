@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>MDZZ.JS - JS库</title>
+	<meta name="keywords" content="mdzz,mdzz.js,智障的JS,javascript库,js库">
+	<meta name="discription" content="没有任何一个JS库比这个更加智障了！">
+	<script type="text/javascript" src="mdzz/mdzz.0.0.1.js"></script>
+	<link rel="stylesheet" type="text/css" href="mdzz/mdzz.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+</head>
+<body>
+
+<pre>
+<a href="#"><h1>mdzz.JS</h1></a>
+<small>真实滑天下之大稽，<br />没有任何一个JS库比这个更加智障了！</small>
+作为一个有尊严的JS库，我内心很有逼数，甚至还支持IE8！！！
+咳咳，开始了吗？
+我是一款<del>鸡肋</del>的模仿<del>PJAX</del>和<del>网易云音乐网页版</del>的JS库
+0.0.1版本仅3.33KB的大小 (๑•̀ㅂ•́)و✧
+共计：98个汉字 3227个字符 包含：72个汉字 2个全角标点 3053个字母 26个数字
+如果你不知道我可以用来干什么的话，我也只有嘤嘤嘤了 (┬＿┬)。
+获取最新版本：<button class="b" onclick="window.open('s/mdzz.0.0.1.js')">0.0.1</button>
+<div id="m">
+
+<h3>这位少侠我看你骨骼惊奇天赋异禀
+下面有个按钮，不如你按一下，必能平定天下大乱！</h3>
+<p>↓↓↓点下面的按钮(☄⊙ω⊙)☄↓↓↓</p>
+<a href="page/p1.html"><button class="bl">( # ▽ # )</button></a>
+</div>
+<small>&copy; 2018 Luuljh [mopter]</small>
+</pre>
+
+<script type="text/javascript">
+
+var mymdzz = mdzz(true,{//设置
+	field: "#m",
+	fieldnum: 0,
+	container: m,
+	add: false,
+	cache: true,
+	crosssite: false,
+	oncrosssite: function (){
+		alert("这不是我家的玉米！");
+	},
+	onerror: function(s){
+		alert("抱歉出错了！HTTP状态码："+s);
+	},
+	complete:function(){
+		console.log("加载完成");
+	}
+});
+
+if (mymdzz) {
+	console.log("MDZZ.JS成功运行在您的浏览器中~");
+}
+
+</script>
+
+</body>
+</html>
