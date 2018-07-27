@@ -1,4 +1,4 @@
-My Daft Zombie  Zoo . js (MDZZ.js)
+妈的智障.Js (MDZZ.Js)
 ------
 *名字是瞎几把拼凑的...*
 
@@ -14,6 +14,8 @@ My Daft Zombie  Zoo . js (MDZZ.js)
 作为一个有尊严的JS库，我内心很有逼数，甚至还支持IE8！！！
 
 如果你不知道我可以用来干什么的话，我也只有嘤嘤嘤了 (┬＿┬)。
+
+查看Demo: [在线demo](./demo/index.html)
 
 好啦好啦，少侠快随我来，马上习得mdzz.JS吧 =-=
 
