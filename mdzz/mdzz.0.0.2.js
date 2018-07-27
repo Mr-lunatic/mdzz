@@ -1,5 +1,5 @@
 /*! Copyright (c) 2018 Luuljh (https://mdzz.lljh.bid)
- * Version: 0.0.1
+ * Version: 0.0.2
  */
 function mdzz(u,options){
 	if (u==true) {
@@ -96,6 +96,8 @@ function mdzz_go(u){
 			xmlhttp.open("GET",u,true);
 			xmlhttp.setRequestHeader("Cache-Control","no-cache");
 		}
+	}else{
+		xmlhttp.open("GET",u,true);
 	}
 	xmlhttp.onreadystatechange=function(){
 		if (xmlhttp.readyState==4){
