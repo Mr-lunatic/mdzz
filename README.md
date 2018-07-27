@@ -86,4 +86,8 @@ var mymdzz = new mdzz(true,{
 译
 ```
 
+<<<<<<< HEAD
 END.
+=======
+END.
+>>>>>>> origin/master
