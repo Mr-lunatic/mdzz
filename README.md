@@ -1,7 +1,7 @@
 MDZZ JS
 ----
 
-[URL Hash](./urlhash/)
+[URL Hash](./urlhash/urlhash.md)
 类似PJAX...弱得很，通过改变hash来改变网页内容
 
 [file2str](./file2str/)
