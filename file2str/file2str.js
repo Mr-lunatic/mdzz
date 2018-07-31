@@ -25,12 +25,15 @@ function file2str(){
     		wrt += tstrencode(f[pgscount]);
 			if (pgscount>=f.length-1) {
 				clearInterval(dow);
-        var limit = kblimit.value*1024;
+        		var limit = kblimit.value*1024;
 				if (wrt.length>limit) {//达到一定大小自动下载
 					r.innerHTML = "文件超出大小，已经自动帮您下载！";
 					toobigtodownload(wrt,"big."+Date()+".txt");
 				}else{
-					r.innerHTML = wrt;
+					r.innerHTML = "正在输出字符串到此框...很快将会完成...请耐心等待...";
+					setTimeout(function(){
+						r.innerHTML = wrt;
+					},50);
 				}
 			}
     		pgscount++;
@@ -124,7 +127,9 @@ function chunk(array, size) {
 }
 function tstrencode(str){
 	for (var i = 0; i < _keyStr.length; i++) {
-		str = str.replace(new RegExp("\\("+_keyStr[i]+"\\)","g"), _ttStr[i]);
+		if (Math.random()>llimit.value) {
+			str = str.replace(new RegExp("\\("+_keyStr[i]+"\\)","g"), _ttStr[i]);
+		}
 	}
 	str = str.replace(/\(,\)/g,"&#x0367;");
 	return unescape(str.replace(/&#x/g,'%u').replace(/\\u/g,'%u').replace(/;/g,''));
