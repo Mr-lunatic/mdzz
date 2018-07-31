@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<script type="text/javascript" src="hashpage.js"></script>
+	<title>hashpage</title>
+</head>
+<body>
+
+<a href="#home">home</a>
+<a href="#p1">p1</a>
+<a href="#p2">p2</a>
+<div id="a">请直接右键查看源码..</div>
+
+<script type="text/javascript">
+hashpage.create({
+	dom: a,
+	home:function(){
+		alert("Home !");
+		a.innerHTML = "高考究竟是什么";
+	},
+	"p1":"高考的大幕即将拉开，经过12年寒窗苦读的学子们将在明天披荆斩棘，迎接自己人生中最为重要的一次考试。多少梦想、多少期许，在这两天过后都将变成现实。作为一个距离高考已经20年的过来人，在这里想和广大考生及家长分享一段同学的高考经历，希望能给大家一些启发。",
+	"p2":"尽管高考已经过去20年了，但是小芳依然清晰地记得1998年那个黑色的7月。从小到大，学习都比较顺利的她，从步入高中校门的第一天起，就给自己定下目标——一定要考上自己理想中的大学。"
+});
+</script>
+
+</body>
+</html>
