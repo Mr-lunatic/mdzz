@@ -1,4 +1,5 @@
 MDZZ JS
+----
 
 [URL Hash](./urlhash/)
 类似PJAX...弱得很，一般会替换所有超链接
@@ -8,4 +9,3 @@ MDZZ JS
 
 [Hash Page](./hashpage/)
 自定义一些hash所对应的页面
-
