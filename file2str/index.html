@@ -9,6 +9,11 @@
 	.s{margin: 20px 0;}
 	#r{padding: 8px 10px;border: 1px solid gray;overflow: hidden;}
 	pre{white-space: pre-wrap;}
+	input[type=file]{
+		border: 1px solid gray;
+		padding: 4px 6px;
+	}
+	.bd{border: 1px solid gray;display: inline-block;padding: 4px 6px;}
 	</style>
 </head>
 <body>
@@ -21,23 +26,33 @@
 </div>
 
 <div class="s">
-	<input type="file" id="f">
+	<h2>转换成字符串：</h2><br />
+	上传：<input type="file" id="f">
 	<button onclick="file2str();">确定</button>
 </div>
 
 <div class="s">
-	<div id="r" contenteditable="true">o0o0o0</div>
+	<div id="r" contenteditable="true">转换后的字符会显示在这里</div>
 </div>
 
 <div class="s">
-	后缀：<input type="text" id="fext" placeholder="zip">
+	<h2>转换回文件：</h2><br />
 	<input type="file" id="rf">
-	<button onclick="download(r.innerHTML,'dl')">下载</button>
+	<div class="bd">预览图片：<input type="checkbox" id="isvimg"></div>
+	<div class="bd">预览文本：<input type="checkbox" id="isvtext"></div>
+	后缀：<input type="text" id="fext" placeholder="txt/jpg/png/zip">
+	<button onclick="download(r.innerHTML,'dl')">确定/下载</button>
 </div>
 
 <div class="s">
-	<pre>选择文件（最好1MB以下），然后点击确认就会自动进行计算，速度看计算机性能和浏览器。计算完成后，中间的那条大黑框里就会出现计算出来的字符串了，如果字符串过大，则会自动进行下载。
-如果需要把字符串转换回文件，则在后缀输入框中输入后缀，把字符串输入到上面的大黑框里，然后点击下载，如果字符串太大，请把字符串复制到一个新建的TXT文件中，然后点击下载前面的选择文件按钮来选择刚才建创的txt文件，再点击下载即可。
+	<h2>预览区：</h2><br />
+	<img src="" id="aovimg">
+	<textarea id="aovtext"></textarea>
+</div>
+
+<div class="s">
+	<pre><h2>帮助：</h2><hr />选择文件（最好1MB以下），然后点击确认就会自动进行计算，速度看计算机性能和浏览器。计算完成后，中间的那条大黑框里就会出现计算出来的字符串了，如果字符串过大，则会自动进行下载。
+如果需要把字符串转换回文件，则在后缀输入框中输入后缀，把字符串输入到上面的大黑框里，然后点击下载，如果字符串太大，请把字符串复制到一个新建的TXT文件中，然后点击下载前面的选择文件按钮来选择刚才建创的txt文件，再点击下载即可。若你想预览文件，可以选中预览图片或者预览文本再点击确定。
 文件太大的时候点击按钮后会卡顿几秒钟，请不要重复点击，请盯着进度条看~(~▽~)~。
 
 </pre>
