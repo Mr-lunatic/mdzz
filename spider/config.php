@@ -2,6 +2,7 @@
 
 $autoclimb = 4; //自动爬行次数
 $keepclimbing = false;//一直保持爬行到最大执行时间
+$searchlimit = 30;//搜索限制N条
 ignore_user_abort(true);//关掉页面也会继续执行
 set_time_limit(30);
 $dbhost = "localhost";

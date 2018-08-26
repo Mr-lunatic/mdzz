@@ -65,6 +65,14 @@ $siteurl = getsiteurl($url);
 
 $html = HTTPget($url);
 
+preg_match("/Content-Type: (.*?)\s/", $html,$is_html);
+
+if ($is_html[1] !== "text/html" && $is_html[1] !== "text/html;") {
+	continue;
+}
+
+unset($is_html);
+
 preg_match_all("/<a.*?href=[\"|'](.*?)[\"|'| ]/", $html, $url);
 
 $url = $url[1];
@@ -168,9 +176,11 @@ function HTTPget($u){
 	curl_setopt($ch, CURLOPT_URL, $u);
 	curl_setopt($ch, CURLOPT_TIMEOUT_MS, 6666);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-	curl_setopt($ch, CURLOPT_HEADER, $h);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $h);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+	curl_setopt($ch, CURLINFO_HEADER_OUT, false);
+	curl_setopt($ch, CURLOPT_HEADER, true);
 	$content = curl_exec($ch);
 	curl_close($ch);
 	if ($content == false) {
@@ -221,7 +231,9 @@ function whichurltoclimb(){
 <div id="output"></div>
 <script type="text/javascript">
 window.onload=function(){
-	window.location.href = "?m=auto";
+	setTimeout(function(){
+		window.location.href = "?m=auto";
+	},5000);
 }
 </script>
 </body>

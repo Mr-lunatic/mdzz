@@ -43,10 +43,10 @@ if ($_GET['s']):
 	}else{
 		$gs[0] = $s;
 	}
-	$rs = $db->query("SELECT * FROM jb_spider WHERE concat(title,html) like '%".$s."%'");
+	$rs = $db->query("SELECT * FROM jb_spider WHERE concat(url,title,html) like '%".$s."%' ORDER BY RAND() LIMIT ".$searchlimit);
 	$count = 0;
 	while($tmp = $rs->fetch_row()){
-		if ($count >= 30) {
+		if ($count >= $searchlimit) {
 			break;
 		}
 		$count++;
@@ -56,10 +56,19 @@ if ($_GET['s']):
 		$info[$count]['title'] = $tmp[3];
 		$info[$count]['date'] = $tmp[4];
 		$info[$count]['pr'] = 0;
-		for ($i=0; $i < count($gs); $i++) { 
+		for ($i=0; $i < count($gs); $i++) {
+			//计算权重
 			if (preg_match("/".$gs[$i]."/i", $info[$count]['title'])) {
-				$info[$count]['pr']++;
+				$info[$count]['pr'] += 1;
 			}
+			if (preg_match("/".$gs[$i]."/i", $info[$count]['url'])) {
+				$info[$count]['pr'] += 2;
+			}
+			$strrepeatcount = substr_count($info[$count]['content'],$gs[$i]);
+			if ($strrepeatcount>1 && $strrepeatcount<35) {
+				$info[$count]['pr'] += $strrepeatcount;
+			}
+			unset($strrepeatcount);
 		}
 	}
 	if ($count !== 0) :
@@ -84,6 +93,7 @@ if ($_GET['s']):
 		</a>
 		<span><?php echo $info[$i]['date'] ?></span>
 		<a href="?m=cache&id=<?php echo $info[$i]['id'] ?>">查看快照</a>
+		<span>动态权重：<?php echo $info[$i]['pr'] ?></span>
 	</div>
 </div>
 
@@ -105,7 +115,7 @@ function excerpt($str){
 	global $gs;
 	$tmp = $gs[0];
 	$start = stripos($str, $tmp);
-	$sub = substr($str, $start, 200);
+	$sub = substr($str,$start,200);
 	return $sub."...";
 }
 
