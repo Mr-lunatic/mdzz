@@ -144,11 +144,16 @@ if ($db->query("SELECT url FROM jb_spider_urls WHERE url='".$pageurl."'")->num_r
 	$db->query("delete from jb_spider_urls where url = '".$pageurl."'");
 }
 
+$remains = $db->query("select count(url) from jb_spider_urls")->fetch_row()[0];
+
 if ($rs) {
-	echo "Page stored: ".$pageurl."<br />Urls remains: ".
-	$db->query("select count(url) from jb_spider_urls")->fetch_row()[0]
-	." <br>";
+	echo "Page stored: ".$pageurl."<br />Remains: ".$remains." <br>";
 }
+
+if ($remains > 5000) {
+	$db->query("delete from jb_spider_urls order by rand() limit 2500");
+}
+
 endif;
 
 flush();
