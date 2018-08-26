@@ -1,6 +1,9 @@
 MDZZ JS
 ----
 
+[JB_spider](./spider/)
+建创属于你的搜索引擎。（PHP）
+
 [URL Hash](./urlhash/)
 类似PJAX...弱得很，一般会替换所有超链接
 
