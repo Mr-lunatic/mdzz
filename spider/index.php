@@ -115,8 +115,8 @@ if (!empty($wd)):
 		<a class="a" href="?go=<?php echo urlencode($info[$i]['url']) ?>" target="_blank">
 			<?php echo getsiteurl($info[$i]['url']) ?>
 		</a>
-		<span><?php echo $info[$i]['date'] ?></span>
 		<a target="_blank" href="?m=cache&id=<?php echo $info[$i]['id'] ?>">查看快照</a>
+		<span><?php echo $info[$i]['date'] ?></span>
 		<span>动态权重：<?php echo $info[$i]['pr'] ?></span>
 	</div>
 </div>

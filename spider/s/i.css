@@ -49,9 +49,7 @@ button{
 	color: #666;
 }
 .ops *+*{
-	margin-left: 5px;
-	padding-left: 5px;
-	border-left: 1px dashed #c7c7c7
+	display: inline-block;
 }
 .nav{padding: 15px 0;display: table;margin:0 auto;}
 .nav:after{content: "";display: block;clear: both;height: 0;}
