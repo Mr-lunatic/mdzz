@@ -9,6 +9,7 @@
 <?php
 
 error_reporting(E_ALL ^ E_NOTICE);
+$is_spider = true;
 include 'config.php';
 
 session_start();

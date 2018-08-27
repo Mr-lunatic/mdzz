@@ -65,12 +65,12 @@ if (!empty($wd)):
 	if (substr($tmp_wd, -1) == "|") {
 		$tmp_wd = substr($tmp_wd,0,strlen($tmp_wd)-1); 
 	}
-	$tmp_banid_ = $db->query("SELECT id FROM jb_spider WHERE concat(url,title,html) like '%".$s."%' ORDER BY title REGEXP '(".$tmp_wd.")' desc limit ".$tmp_addon);
+	$tmp_banid_ = $db->query("SELECT id FROM jb_spider WHERE concat(url,title,html) like '%".$s."%' ORDER BY url REGEXP '(".$tmp_wd.")' desc, title REGEXP '(".$tmp_wd.")' desc, date desc limit ".$tmp_addon);
 	while ($tmp_banid = $tmp_banid_->fetch_row()) {
 		$banid .= " AND id <>".$tmp_banid[0];
 	}
 	unset($tmp_banid_,$tmp_banid,$tmp_addon);
-	$rs = $db->query("SELECT * FROM jb_spider WHERE concat(url,title,html) like '%".$s."%' AND ".$banid." ORDER BY title REGEXP '(".$tmp_wd.")' desc limit ".$searchlimit);
+	$rs = $db->query("SELECT * FROM jb_spider WHERE concat(url,title,html) like '%".$s."%' AND ".$banid." ORDER BY url REGEXP '(".$tmp_wd.")' desc, title REGEXP '(".$tmp_wd.")' desc, date desc limit ".$searchlimit);
 	unset($tmp_wd);
 	$count = 0;
 	while($tmp = $rs->fetch_row()){
