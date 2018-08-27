@@ -3,12 +3,33 @@
 <head>
 	<meta charset="utf-8">
 	<title>SPIDER</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 </head>
 <body>
 <?php
-//options
+
 error_reporting(E_ALL ^ E_NOTICE);
 include 'config.php';
+
+session_start();
+if ($_GET['m'] == "logout") {
+	$_SESSION['pass'] = "x";
+	exit('已登出...');
+}
+if ($_POST['pass'] == $password) {
+	$_SESSION['pass'] = $password;	
+}
+if ($_SESSION['pass'] !== $password) :
+?>
+<form action="" method="post">
+	<input type="password" name="pass">
+	<button type="submit">登陆</button>
+</form>
+</body>
+</html>
+<?php
+exit();
+endif;
 
 if ($_GET['m'] == "install") :
 $rs = $db->query("CREATE TABLE IF NOT EXISTS `jb_spider`(
@@ -36,19 +57,28 @@ ADD FULLTEXT (html);");
 if (!$rs) {
 	exit("FULLTEXT Error !");
 }
-exit("OJBK !");
+exit("安装完毕 !");
 endif;
+
+if ($_GET['m'] == "manadata") {
+	$db->query('ALTER TABLE `jb_spider` DROP `id`;ALTER TABLE `jb_spider` ADD `id` int NOT NULL FIRST;ALTER TABLE `jb_spider` MODIFY COLUMN `id` int NOT NULL AUTO_INCREMENT,ADD PRIMARY KEY(id);');
+	exit('数据整理完成');
+}
 
 if (!$_GET['u'] && !$_GET['m']) {
 	?>
 <form action="" method="get">
 	<input type="text" name="u" placeholder="http://">
-	<button type="submit">[Ok]</button>
-	<br />
-	<button type="button" onclick="window.location.href='?m=auto'">[auto]</button>
+	<button type="submit">[开爬]</button>
 </form>
+<br />
+<button type="button" onclick="window.location.href='?m=auto'"> [瞎几把爬爬] </button>
+<button type="button" onclick="window.location.href='?m=manadata'"> [整理数据] </button>
+<button type="button" onclick="window.location.href='?m=logout'"> [登出] </button>
+</body>
+</html>
 <?php
-	exit("Missing `u` -- the url !");
+	exit();
 }
 
 ob_end_flush();
@@ -72,6 +102,9 @@ if ($is_html[1] !== "text/html" && $is_html[1] !== "text/html;") {
 }
 
 unset($is_html);
+
+//去除curl输出的头部和第一个标签
+$html = preg_replace("/^HTTP.*?\s</s", "<", $html);
 
 preg_match_all("/<a.*?href=[\"|'](.*?)[\"|'| ]/", $html, $url);
 
@@ -133,7 +166,7 @@ if (empty($htmlencoding)) {
 preg_match("/<title>(.*?)<\/title>/i", $html, $htmltitle);
 $htmltitle = $htmltitle[1];
 if (empty($htmltitle)) {
-	$htmltitle = "无title的页面";
+	$htmltitle = "*NoTitle*".$pageurl;
 }
 $html = preg_replace("/\s+/", " ", $html);
 $html = preg_replace("/<(style|script).*?>.*?<\/(style|script)>/i", "", $html);

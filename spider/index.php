@@ -4,11 +4,13 @@
 * @license GPL-2.0 <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
 */
 error_reporting(E_ALL ^ E_NOTICE);
-if ($_GET['s'] || $_GET['id']):
+
+if ($_GET['s'] || $_GET['id'] || $_GET['go']):
 	include 'config.php';
 endif;
 if ($_GET['go']) {
-	header("Location: ".urldecode($_GET['go']));
+	htmlinfo('<meta content="always" name="referrer"><script>window.location.replace("'.urldecode($_GET['go']).'")</script>
+<noscript><META http-equiv="refresh" content="0;URL=\''.urldecode($_GET['go']).'\'"></noscript>');
 	exit();
 }
 if ($_GET['m']=="cache" && $_GET['id']) {
@@ -16,6 +18,7 @@ if ($_GET['m']=="cache" && $_GET['id']) {
 	htmlinfo($db->query("SELECT html FROM jb_spider WHERE id=".$_GET['id'])->fetch_row()[0]);
 	exit();
 }
+$wd = htmlspecialchars(urldecode($_GET['s']));
 ?>
 
 <!DOCTYPE html>
@@ -24,18 +27,21 @@ if ($_GET['m']=="cache" && $_GET['id']) {
 	<meta charset="utf-8">
 	<title>JB Search</title>
 	<link rel="stylesheet" type="text/css" href="i.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 </head>
 <body>
 
+<?php if (empty($wd)): ?>
+	<img src="logo.jpg" class="logo" ondragstart='return false;'>
+<?php endif ?>
 <form action="" method="get">
-	<input type="input" name="s" value="<?php echo htmlspecialchars(urldecode($_GET['s'])) ?>">
+	<input type="input" name="s" value="<?php echo $wd ?>">
 	<button type="submit">[search]</button>
 </form>
 
 <?php
-if ($_GET['s']):
-
-	$s = fixmarks(htmlspecialchars(urldecode($_GET['s'])));
+if (!empty($wd)):
+	$s = fixmarks($wd);
 	if (strpos($s, " ") !== false) {
 		$s = explode(" ", $s);
 		$gs = $s;
@@ -43,7 +49,12 @@ if ($_GET['s']):
 	}else{
 		$gs[0] = $s;
 	}
-	$rs = $db->query("SELECT * FROM jb_spider WHERE concat(url,title,html) like '%".$s."%' ORDER BY RAND() LIMIT ".$searchlimit);
+	$pageNo = $_GET['page'];
+	if (is_nan($pageNo) || !$pageNo) {
+		$pageNo = 1;
+	}
+	$pageNo--;
+	$rs = $db->query("SELECT * FROM jb_spider WHERE concat(url,title,html) like '%".$s."%' AND id > ".($pageNo*$searchlimit)." ORDER BY date desc limit ".$searchlimit);
 	$count = 0;
 	while($tmp = $rs->fetch_row()){
 		if ($count >= $searchlimit) {
@@ -68,9 +79,15 @@ if ($_GET['s']):
 			if ($strrepeatcount>1 && $strrepeatcount<35) {
 				$info[$count]['pr'] += $strrepeatcount;
 			}
-			unset($strrepeatcount);
+			$tmp_title = str_replace("*NoTitle*", "", $info[$count]['title']);
+			if ($info[$count]['title'] !== $tmp_title) {
+				//无标题
+				$info[$count]['title'] = $tmp_title;
+				$info[$count]['pr'] -= 1;
+			}
 		}
 	}
+	unset($strrepeatcount);
 	if ($count !== 0) :
 	//按照权重重新排序
 	foreach ($info as $key => $row){
@@ -92,7 +109,7 @@ if ($_GET['s']):
 			<?php echo getsiteurl($info[$i]['url']) ?>
 		</a>
 		<span><?php echo $info[$i]['date'] ?></span>
-		<a href="?m=cache&id=<?php echo $info[$i]['id'] ?>">查看快照</a>
+		<a target="_blank" href="?m=cache&id=<?php echo $info[$i]['id'] ?>">查看快照</a>
 		<span>动态权重：<?php echo $info[$i]['pr'] ?></span>
 	</div>
 </div>
@@ -120,6 +137,24 @@ function excerpt($str){
 }
 
 ?>
-<small class="ct mg">&copy; 2018.</small>
+
+<?php if (!empty($wd)) : ?>
+<div class="nav">
+	<?php if ($pageNo>0): ?>
+		<a href="?s=<?php echo $wd ?>&page=<?php echo $pageNo ?>"><li>上一页</li></a>
+	<?php endif ?>
+	<?php if ($count >= $searchlimit) : ?>
+	<a href="?s=<?php echo $wd ?>&page=<?php echo $pageNo+2 ?>"><li>下一页</li></a>
+	<?php endif ?>
+</div>
+<?php endif ?>
+<script type="text/javascript">
+	console.log("Jb 搜索引擎：%s","https://github.com/1443691826/mdzz/tree/master/spider");
+</script>
+<small class="foot">&copy; 2018 <?php echo $_SERVER['HTTP_HOST'] ?>
+. Powered By <a href="https://github.com/1443691826/mdzz/tree/master/spider">Jbsearch</a></small>
+<!--
+底部链接禁止去除
+-->
 </body>
 </html>

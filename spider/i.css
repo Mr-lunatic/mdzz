@@ -32,8 +32,10 @@ button{
 	color: #666;
 	margin: 5px 0;
 }
-.ct{margin: 0 auto;display: table;text-align: center}
-.mg{margin-top: 15px;margin-bottom: 15px}
+.foot{
+	margin: 15px auto;display: table;text-align: center
+}
+.foot a{color: #666;text-decoration: none;}
 .ops{
 	font-size: 0.9em;
 }
@@ -49,4 +51,36 @@ button{
 	margin-left: 5px;
 	padding-left: 5px;
 	border-left: 1px dashed #c7c7c7
+}
+.nav{
+	padding: 15px 0;
+}
+.nav a{
+	text-decoration: none;
+	color: black
+}
+.logo{
+	max-width: 80%;
+	display: block;
+	margin: 0px auto 50px auto;
+}
+.logo,button{
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+input{width: 400px}
+@media screen and (max-width: 555px){
+	input{width: 300px}
+}
+@media screen and (max-width: 470px){
+	input{width: 260px}
+}
+@media screen and (max-width: 430px){
+	form{width: 303px}
+	input{width: 200px}
+	.logo{max-width: 100%}
 }
