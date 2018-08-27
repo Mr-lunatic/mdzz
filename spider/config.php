@@ -2,7 +2,7 @@
 
 $autoclimb = 4; //自动爬行次数
 $keepclimbing = false;//一直保持爬行到最大执行时间
-$searchlimit = 30;//每页搜索限制N条
+$searchlimit = 5;//每页搜索限制N条
 $password = "admin888";//蜘蛛的密码
 ignore_user_abort(true);//关掉页面也会继续执行
 set_time_limit(30);
@@ -15,6 +15,7 @@ $db = new mysqli($dbhost,$username,$userpass,$dbdatabase);
 if (mysqli_connect_error()) {
 	exit('Could not connect to database.');
 }
+$db->query("set names utf-8");
 
 function fixmarks($str){
 	return str_replace(["\"","'"], ["\\\"","\\'"], $str);

@@ -62,6 +62,8 @@ endif;
 
 if ($_GET['m'] == "manadata") {
 	$db->query('ALTER TABLE `jb_spider` DROP `id`;ALTER TABLE `jb_spider` ADD `id` int NOT NULL FIRST;ALTER TABLE `jb_spider` MODIFY COLUMN `id` int NOT NULL AUTO_INCREMENT,ADD PRIMARY KEY(id);');
+	$db->query("truncate table jb_spider_urls");
+	$db->query('ALTER TABLE `jb_spider_urls` DROP `id`;ALTER TABLE `jb_spider_urls` ADD `id` int NOT NULL FIRST;ALTER TABLE `jb_spider_urls` MODIFY COLUMN `id` int NOT NULL AUTO_INCREMENT,ADD PRIMARY KEY(id);');
 	exit('数据整理完成');
 }
 
@@ -73,7 +75,7 @@ if (!$_GET['u'] && !$_GET['m']) {
 </form>
 <br />
 <button type="button" onclick="window.location.href='?m=auto'"> [瞎几把爬爬] </button>
-<button type="button" onclick="window.location.href='?m=manadata'"> [整理数据] </button>
+<button type="button" onclick="window.location.href='?m=manadata'"> [整理数据并清空爬行表] </button>
 <button type="button" onclick="window.location.href='?m=logout'"> [登出] </button>
 </body>
 </html>

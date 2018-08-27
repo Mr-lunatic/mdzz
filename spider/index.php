@@ -26,13 +26,14 @@ $wd = htmlspecialchars(urldecode($_GET['s']));
 <head>
 	<meta charset="utf-8">
 	<title>JB Search</title>
-	<link rel="stylesheet" type="text/css" href="i.css">
+	<link rel="stylesheet" type="text/css" href="s/i.css">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<script src="//libs.baidu.com/jquery/1.8.3/jquery.min.js"></script>
 </head>
 <body>
 
 <?php if (empty($wd)): ?>
-	<img src="logo.jpg" class="logo" ondragstart='return false;'>
+	<img src="s/logo.jpg" class="logo" ondragstart='return false;'>
 <?php endif ?>
 <form action="" method="get">
 	<input type="input" name="s" value="<?php echo $wd ?>">
@@ -54,7 +55,14 @@ if (!empty($wd)):
 		$pageNo = 1;
 	}
 	$pageNo--;
-	$rs = $db->query("SELECT * FROM jb_spider WHERE concat(url,title,html) like '%".$s."%' AND id > ".($pageNo*$searchlimit)." ORDER BY date desc limit ".$searchlimit);
+	$banip = "id <> -1";
+	$tmp_addon = $pageNo*$searchlimit;
+	$tmp_banip_ = $db->query("SELECT id FROM jb_spider WHERE concat(url,title,html) like '%".$s."%' limit ".$tmp_addon);
+	while ($tmp_banip = $tmp_banip_->fetch_row()) {
+		$banip .= " AND id <>".$tmp_banip[0];
+	}
+	unset($tmp_banip_,$tmp_banip,$tmp_addon);
+	$rs = $db->query("SELECT * FROM jb_spider WHERE concat(url,title,html) like '%".$s."%' AND ".$banip." limit ".$searchlimit);
 	$count = 0;
 	while($tmp = $rs->fetch_row()){
 		if ($count >= $searchlimit) {
@@ -98,11 +106,9 @@ if (!empty($wd)):
 	for ($i=0; $i < count($info); $i++) : ?>
 
 <div class="rs">
-	<div class="title">
-		<a href="?go=<?php echo urlencode($info[$i]['url']) ?>" target="_blank">
-			<?php echo $info[$i]['title'] ?>
-		</a>
-	</div>
+	<a class="title" href="?go=<?php echo urlencode($info[$i]['url']) ?>" target="_blank">
+		<?php echo $info[$i]['title'] ?>
+	</a>
 	<div class="content"><?php echo $info[$i]['content'] ?></div>
 	<div class="ops">
 		<a class="a" href="?go=<?php echo urlencode($info[$i]['url']) ?>" target="_blank">
@@ -130,9 +136,8 @@ endif;
 
 function excerpt($str){
 	global $gs;
-	$tmp = $gs[0];
-	$start = stripos($str, $tmp);
-	$sub = substr($str,$start,200);
+	$start = stripos($str, $gs[0]);
+	$sub = substr($str,$start, 300);
 	return $sub."...";
 }
 
@@ -141,16 +146,14 @@ function excerpt($str){
 <?php if (!empty($wd)) : ?>
 <div class="nav">
 	<?php if ($pageNo>0): ?>
-		<a href="?s=<?php echo $wd ?>&page=<?php echo $pageNo ?>"><li>上一页</li></a>
+		<a class="f-l" href="?s=<?php echo $wd ?>&page=<?php echo $pageNo ?>"><li>上一页</li></a>
 	<?php endif ?>
 	<?php if ($count >= $searchlimit) : ?>
-	<a href="?s=<?php echo $wd ?>&page=<?php echo $pageNo+2 ?>"><li>下一页</li></a>
+	<a class='f-r' href="?s=<?php echo $wd ?>&page=<?php echo $pageNo+2 ?>"><li>下一页</li></a>
 	<?php endif ?>
 </div>
 <?php endif ?>
-<script type="text/javascript">
-	console.log("Jb 搜索引擎：%s","https://github.com/1443691826/mdzz/tree/master/spider");
-</script>
+<script type="text/javascript" src="s/i.js"></script>
 <small class="foot">&copy; 2018 <?php echo $_SERVER['HTTP_HOST'] ?>
 . Powered By <a href="https://github.com/1443691826/mdzz/tree/master/spider">Jbsearch</a></small>
 <!--
