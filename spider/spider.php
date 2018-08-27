@@ -116,7 +116,11 @@ $url = array_unique($url);
 
 $_url = [];
 
-for ($i=0; $i < count($url); $i++) { 
+shuffle($url);
+
+$limit = count($url)>50 ? 50 : count($url);
+
+for ($i=0; $i < $limit; $i++) { 
 	if (@substr($url[$i], 0, 1) !== "#" && !empty($url[$i])  &&
 		@substr($url[$i], 0, 11) !== "javascript:") {
 		$tmp = relative2absolute($url[$i]);
@@ -126,7 +130,7 @@ for ($i=0; $i < count($url); $i++) {
 	}
 }
 
-unset($url);
+unset($url,$limit);
 
 // 检查重复
 
@@ -190,7 +194,7 @@ if ($db->query("SELECT url FROM jb_spider_urls WHERE url='".$pageurl."'")->num_r
 $remains = $db->query("select count(url) from jb_spider_urls")->fetch_row()[0];
 
 if ($rs) {
-	echo "Page stored: ".$pageurl."<br />Remains: ".$remains." <br>";
+	echo "Page stored: ".$pageurl." &nbsp; Remains: ".$remains." <br>";
 }
 
 if ($remains > 5000) {
@@ -236,34 +240,42 @@ function relative2absolute($n){
 		if (empty($n)) {
 			return false;
 		}
-		return $siteurl."/".$n;
+		if (substr($n, 0, 1) == "/") {
+			return $siteurl.substr($n, 1);
+		}else{
+			return $siteurl.$n;
+		}
 	}
 }
 function resort($arr){
-	$tmp=[];
+	$tmp = [];
 	foreach ($arr as $key => $value) {
 		$tmp[] = $value;
 	}
 	return $tmp;
 }
-
 function whichurltoclimb(){
-	global $url,$db;
+	echo "\n";
+	global $url,$db,$siteurl;
 	if ($_GET['u']) {
 		$url = urldecode($_GET['u']);
-		if (empty($url)) {
-			exit("URL not found");
-		}
 	}else{
-		$url = $db->query("SELECT url FROM jb_spider_urls ORDER BY RAND() LIMIT 1")->fetch_row()[0];
+		if (empty($siteurl)) {
+			$lastclimb = "<";
+		}else{
+			$lastclimb = $siteurl;
+		}
+		$url = $db->query("SELECT url FROM jb_spider_urls WHERE url NOT LIKE \"%".$lastclimb."%\" ORDER BY RAND() LIMIT 1")->fetch_row()[0];
 		if (empty($url)) {
-			exit("URL remains : 0");
+			$url = $db->query("SELECT url FROM jb_spider_urls ORDER BY RAND() LIMIT 1")->fetch_row()[0];
+			if (empty($url)) {
+				exit("URL remains : 0");
+			}
 		}
 	}
 }
-
+file_put_contents("s/lastclimb", date("Y-m-d h:i:s"));
 ?>
-<div id="output"></div>
 <script type="text/javascript">
 window.onload=function(){
 	setTimeout(function(){

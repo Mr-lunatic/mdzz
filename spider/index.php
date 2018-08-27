@@ -3,7 +3,7 @@
 * @author Luuljh <http://blog.lljh.bid>
 * @license GPL-2.0 <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
 */
-error_reporting(E_ALL ^ E_NOTICE);
+error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
 
 if ($_GET['s'] || $_GET['id'] || $_GET['go']):
 	include 'config.php';
@@ -20,7 +20,6 @@ if ($_GET['m']=="cache" && $_GET['id']) {
 }
 $wd = htmlspecialchars(urldecode($_GET['s']));
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -51,7 +50,9 @@ if (!empty($wd)):
 		$gs[0] = $s;
 	}
 	$pageNo = $_GET['page'];
-	if (is_nan($pageNo) || !$pageNo) {
+	$pageNo ?: $pageNo = 1;
+	if (is_nan($pageNo) || $pageNo<1) {
+		echo "<div class='warning'>请勿修改page参数</div>";
 		$pageNo = 1;
 	}
 	$pageNo--;
@@ -71,7 +72,7 @@ if (!empty($wd)):
 		$count++;
 		$info[$count]['id'] = $tmp[0];
 		$info[$count]['url'] = $tmp[1];
-		$info[$count]['content'] = excerpt($tmp[2]);
+		$info[$count]['content'] = $tmp[2];
 		$info[$count]['title'] = $tmp[3];
 		$info[$count]['date'] = $tmp[4];
 		$info[$count]['pr'] = 0;
@@ -109,7 +110,7 @@ if (!empty($wd)):
 	<a class="title" href="?go=<?php echo urlencode($info[$i]['url']) ?>" target="_blank">
 		<?php echo $info[$i]['title'] ?>
 	</a>
-	<div class="content"><?php echo $info[$i]['content'] ?></div>
+	<div class="content"><?php echo excerpt($info[$i]['content']) ?></div>
 	<div class="ops">
 		<a class="a" href="?go=<?php echo urlencode($info[$i]['url']) ?>" target="_blank">
 			<?php echo getsiteurl($info[$i]['url']) ?>
@@ -154,8 +155,14 @@ function excerpt($str){
 </div>
 <?php endif ?>
 <script type="text/javascript" src="s/i.js"></script>
-<small class="foot">&copy; 2018 <?php echo $_SERVER['HTTP_HOST'] ?>
-. Powered By <a href="https://github.com/1443691826/mdzz/tree/master/spider">Jbsearch</a></small>
+<small class="foot">
+&copy; 2018 <?php echo $_SERVER['HTTP_HOST'] ?>
+. Powered By <a href="https://github.com/1443691826/mdzz/tree/master/spider">Jbsearch</a>
+<?php
+if (file_exists("s/lastclimb"))
+	echo "<br />最后一次爬行：".file_get_contents("s/lastclimb")
+?>
+</small>
 <!--
 底部链接禁止去除
 -->
