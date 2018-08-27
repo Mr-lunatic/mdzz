@@ -61,6 +61,14 @@ exit("安装完毕 !");
 endif;
 
 if ($_GET['m'] == "manadata") {
+	$db->query('DELETE FROM jb_spider WHERE html = "" OR title = "" OR date = "";');
+	$db->query('DELETE FROM jb_spider WHERE html IN (
+SELECT html FROM (
+SELECT html,COUNT(*) FROM jb_spider
+GROUP BY html
+HAVING COUNT(*) > 1
+) AS a
+) LIMIT 1;');
 	$db->query('ALTER TABLE `jb_spider` DROP `id`;ALTER TABLE `jb_spider` ADD `id` int NOT NULL FIRST;ALTER TABLE `jb_spider` MODIFY COLUMN `id` int NOT NULL AUTO_INCREMENT,ADD PRIMARY KEY(id);');
 	$db->query("truncate table jb_spider_urls");
 	$db->query('ALTER TABLE `jb_spider_urls` DROP `id`;ALTER TABLE `jb_spider_urls` ADD `id` int NOT NULL FIRST;ALTER TABLE `jb_spider_urls` MODIFY COLUMN `id` int NOT NULL AUTO_INCREMENT,ADD PRIMARY KEY(id);');
@@ -70,13 +78,18 @@ if ($_GET['m'] == "manadata") {
 if (!$_GET['u'] && !$_GET['m']) {
 	?>
 <form action="" method="get">
-	<input type="text" name="u" placeholder="http://">
+	<input type="text" name="u" placeholder="http://开头，尽量不留/">
 	<button type="submit">[开爬]</button>
 </form>
 <br />
 <button type="button" onclick="window.location.href='?m=auto'"> [瞎几把爬爬] </button>
 <button type="button" onclick="window.location.href='?m=manadata'"> [整理数据并清空爬行表] </button>
 <button type="button" onclick="window.location.href='?m=logout'"> [登出] </button>
+<br /><br />
+剩余链接：
+<?php
+echo $db->query("select count(url) from jb_spider_urls")->fetch_row()[0]."条";
+?>
 </body>
 </html>
 <?php
@@ -100,6 +113,14 @@ $html = HTTPget($url);
 preg_match("/Content-Type: (.*?)\s/", $html,$is_html);
 
 if ($is_html[1] !== "text/html" && $is_html[1] !== "text/html;") {
+	echo "Miss HTML MIME";
+	continue;
+}
+
+preg_match("/<.*?>/", $html,$is_html);
+
+if (count($is_html[0]) == 0) {
+	echo "Miss HTML content";
 	continue;
 }
 
@@ -171,9 +192,11 @@ if (empty($htmlencoding)) {
 }
 preg_match("/<title>(.*?)<\/title>/i", $html, $htmltitle);
 $htmltitle = $htmltitle[1];
-if (empty($htmltitle)) {
+$tmp_title = str_replace(" ", "", $htmltitle);
+if (empty($tmp_title)) {
 	$htmltitle = "*NoTitle*".$pageurl;
 }
+unset($tmp_title);
 $html = preg_replace("/\s+/", " ", $html);
 $html = preg_replace("/<(style|script).*?>.*?<\/(style|script)>/i", "", $html);
 $html = preg_replace("/<(.*?)>/", "", $html);
@@ -181,7 +204,8 @@ if ($htmlencoding !== "UTF-8") {
 	$html = iconv($htmlencoding, "UTF-8//IGNORE", $html);
 }
 
-if ($db->query("SELECT url FROM jb_spider WHERE url='".$pageurl."'")->num_rows == 0) :
+if ($db->query("SELECT url FROM jb_spider WHERE url='".$pageurl."'")->num_rows == 0 || diffbtw2d($db->query("SELECT date FROM jb_spider WHERE url='".$pageurl."'")->fetch_row()[0],date("Y-m-d")) > 30) {
+//库中不存在 或者 很久没爬过的链接
 
 $rs = $db->query("INSERT INTO jb_spider (url,html,title,date) VALUES
 ('".$pageurl."','".fixmarks($html)."','".$htmltitle."','".date("Y-m-d")."')");
@@ -194,14 +218,16 @@ if ($db->query("SELECT url FROM jb_spider_urls WHERE url='".$pageurl."'")->num_r
 $remains = $db->query("select count(url) from jb_spider_urls")->fetch_row()[0];
 
 if ($rs) {
-	echo "Page stored: ".$pageurl." &nbsp; Remains: ".$remains." <br>";
+	echo "Stored: ".$pageurl." &nbsp; Remains: ".$remains." <br>";
 }
 
 if ($remains > 5000) {
-	$db->query("delete from jb_spider_urls order by rand() limit 2500");
+	$db->query("DELETE from jb_spider_urls order by rand() limit 2500");
 }
 
-endif;
+}else{
+	echo "Page Climbed".$pageurl;
+}//库中不存在 或者 很久没爬过的链接 --- 入库
 
 flush();
 
@@ -256,9 +282,10 @@ function resort($arr){
 }
 function whichurltoclimb(){
 	echo "\n";
-	global $url,$db,$siteurl;
+	global $url,$db,$siteurl,$autoclimb;
 	if ($_GET['u']) {
 		$url = urldecode($_GET['u']);
+		$autoclimb = -1;
 	}else{
 		if (empty($siteurl)) {
 			$lastclimb = "<";
@@ -274,7 +301,17 @@ function whichurltoclimb(){
 		}
 	}
 }
-file_put_contents("s/lastclimb", date("Y-m-d h:i:s"));
+function diffbtw2d($day1, $day2){
+  $second1 = strtotime($day1);
+  $second2 = strtotime($day2);
+  if ($second1 < $second2) {
+    $tmp = $second2;
+    $second2 = $second1;
+    $second1 = $tmp;
+  }
+  return ($second1 - $second2) / 86400;
+}
+file_put_contents("s/lastclimb", date("Y-m-d H:i:s"));
 ?>
 <script type="text/javascript">
 window.onload=function(){
