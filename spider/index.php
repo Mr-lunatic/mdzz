@@ -45,7 +45,7 @@ if (!empty($wd)):
 	if (strpos($s, " ") !== false) {
 		$s = explode(" ", $s);
 		$gs = $s;
-		$s = implode("% %", $s);
+		$s = implode("%", $s);
 	}else{
 		$gs[0] = $s;
 	}
@@ -56,14 +56,22 @@ if (!empty($wd)):
 		$pageNo = 1;
 	}
 	$pageNo--;
-	$banip = "id <> -1";
+	$banid = "id <> -1";
 	$tmp_addon = $pageNo*$searchlimit;
-	$tmp_banip_ = $db->query("SELECT id FROM jb_spider WHERE concat(url,title,html) like '%".$s."%' limit ".$tmp_addon);
-	while ($tmp_banip = $tmp_banip_->fetch_row()) {
-		$banip .= " AND id <>".$tmp_banip[0];
+	$tmp_wd = str_replace(" ", "|", $wd);
+	if (substr($tmp_wd, 0, 1) == "|") {
+		$tmp_wd = substr($tmp_wd, 1);
 	}
-	unset($tmp_banip_,$tmp_banip,$tmp_addon);
-	$rs = $db->query("SELECT * FROM jb_spider WHERE concat(url,title,html) like '%".$s."%' AND ".$banip." limit ".$searchlimit);
+	if (substr($tmp_wd, -1) == "|") {
+		$tmp_wd = substr($tmp_wd,0,strlen($tmp_wd)-1); 
+	}
+	$tmp_banid_ = $db->query("SELECT id FROM jb_spider WHERE concat(url,title,html) like '%".$s."%' ORDER BY title REGEXP '(".$tmp_wd.")' desc limit ".$tmp_addon);
+	while ($tmp_banid = $tmp_banid_->fetch_row()) {
+		$banid .= " AND id <>".$tmp_banid[0];
+	}
+	unset($tmp_banid_,$tmp_banid,$tmp_addon);
+	$rs = $db->query("SELECT * FROM jb_spider WHERE concat(url,title,html) like '%".$s."%' AND ".$banid." ORDER BY title REGEXP '(".$tmp_wd.")' desc limit ".$searchlimit);
+	unset($tmp_wd);
 	$count = 0;
 	while($tmp = $rs->fetch_row()){
 		if ($count >= $searchlimit) {
@@ -79,10 +87,10 @@ if (!empty($wd)):
 		for ($i=0; $i < count($gs); $i++) {
 			//计算权重
 			if (preg_match("/".$gs[$i]."/i", $info[$count]['title'])) {
-				$info[$count]['pr'] += 1;
+				$info[$count]['pr'] += 5;
 			}
 			if (preg_match("/".$gs[$i]."/i", $info[$count]['url'])) {
-				$info[$count]['pr'] += 2;
+				$info[$count]['pr'] += 5;
 			}
 			$strrepeatcount = substr_count($info[$count]['content'],$gs[$i]);
 			if ($strrepeatcount>1 && $strrepeatcount<35) {

@@ -100,6 +100,10 @@ ob_end_flush();
 
 while ($autoclimb>0 || $keepclimbing) :
 
+if (file_exists("stop")) {
+	exit("Stop by force");
+}
+
 if ($keepclimbing) {
 	//一直爬
 	file_put_contents("s/lastclimb", date("Y-m-d H:i:s"));
@@ -118,14 +122,14 @@ $html = HTTPget($url);
 preg_match("/Content-Type: (.*?)\s/", $html,$is_html);
 
 if ($is_html[1] !== "text/html" && $is_html[1] !== "text/html;") {
-	echo "Miss HTML MIME";
+	echo "Miss HTML MIME<br />";
 	continue;
 }
 
 preg_match("/<.*?>/", $html,$is_html);
 
 if (count($is_html[0]) == 0) {
-	echo "Miss HTML content";
+	echo "Miss HTML content<br />";
 	continue;
 }
 
