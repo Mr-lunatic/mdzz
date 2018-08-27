@@ -100,6 +100,11 @@ ob_end_flush();
 
 while ($autoclimb>0 || $keepclimbing) :
 
+if ($keepclimbing) {
+	//一直爬
+	file_put_contents("s/lastclimb", date("Y-m-d H:i:s"));
+}
+
 $autoclimb--;
 
 whichurltoclimb();
@@ -311,7 +316,9 @@ function diffbtw2d($day1, $day2){
   }
   return ($second1 - $second2) / 86400;
 }
-file_put_contents("s/lastclimb", date("Y-m-d H:i:s"));
+if (!$keepclimbing) {
+	file_put_contents("s/lastclimb", date("Y-m-d H:i:s"));
+}
 ?>
 <script type="text/javascript">
 window.onload=function(){
