@@ -119,12 +119,26 @@ $pageurl = $url;
 
 $siteurl = getsiteurl($url);
 
+if (!empty($sitelimit[0])) {
+	//链接限制
+	if (str_replace($sitelimit, "", $siteurl) == $siteurl){
+		$shouldnotclimb = true;
+	}
+	if ($shouldnotclimb == true) {
+		$autoclimb++;
+		echo "Blocked: ".$siteurl."<br />";
+		unset($shouldnotclimb);
+		continue;
+	}
+}
+
 $html = HTTPget($url);
 
 preg_match("/Content-Type: (.*?)\s/", $html,$is_html);
 
 if ($is_html[1] !== "text/html" && $is_html[1] !== "text/html;") {
 	echo "Miss HTML MIME<br />";
+	$autoclimb++;
 	continue;
 }
 
@@ -132,6 +146,7 @@ preg_match("/<.*?>/", $html,$is_html);
 
 if (count($is_html[0]) == 0) {
 	echo "Miss HTML content<br />";
+	$autoclimb++;
 	continue;
 }
 
@@ -162,19 +177,29 @@ $_url = [];
 
 shuffle($url);
 
-$limit = count($url)>50 ? 50 : count($url);
-
-for ($i=0; $i < $limit; $i++) { 
+for ($i=0; $i < count($url); $i++) { 
 	if (@substr($url[$i], 0, 1) !== "#" && !empty($url[$i])  &&
 		@substr($url[$i], 0, 11) !== "javascript:") {
 		$tmp = relative2absolute($url[$i]);
 		if ($tmp && !in_array($tmp, $_url)) {
-			$_url[] = $tmp;
+			if (!empty($sitelimit[0])){ //开启了限制域名
+				//判断是否在限制域名内
+				if (str_replace($sitelimit, "", $tmp) == $tmp) {
+					//不允许爬的
+					$shouldnotclimb = true;
+				}
+				if ($shouldnotclimb !== true) {
+					$_url[] = $tmp;
+				}
+				unset($shouldnotclimb);
+			}else{
+				$_url[] = $tmp;
+			}
 		}
 	}
 }
 
-unset($url,$limit);
+unset($url);
 
 // 检查重复
 
@@ -241,7 +266,7 @@ if ($remains > 5000) {
 }
 
 }else{
-	echo "Page Climbed".$pageurl;
+	echo "Page Climbed: ".$pageurl;
 }//库中不存在 或者 很久没爬过的链接 --- 入库
 
 flush();
@@ -329,7 +354,11 @@ function diffbtw2d($day1, $day2){
 if (!$keepclimbing) {
 	file_put_contents("s/lastclimb", date("Y-m-d H:i:s"));
 }
-jsgo("",5000);
+if ($_GET['u']) {
+	jsgo("?",5000);
+}else{
+	jsgo("",5000);
+}
 ?>
 </body>
 </html>

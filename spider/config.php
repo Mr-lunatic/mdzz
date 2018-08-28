@@ -6,6 +6,7 @@ $searchlimit = 15;//每页搜索限制N条
 $password = "admin888";//蜘蛛的密码
 ignore_user_abort(true);//关掉页面也会继续执行
 set_time_limit(30);
+$sitelimit = array();//域名限制 如："baidu.com","mo.jj.com" 写入字符串则蜘蛛爬行的url会包含该字符串。不写则为全网爬
 $dbhost = "localhost";
 $username = "root";
 $userpass = "root";
@@ -38,7 +39,11 @@ function htmlinfo($str){
 </html>';
 }
 function jsgo($url,$timeout=3000){
-	echo '<script>setTimeout(function(){
+	echo '
+<script>setTimeout(function(){
 			window.location.href = "'.$url.'";
-		},'.$timeout.')</script>';
+		},'.$timeout.');
+		setTimeout(function(){
+			window.location.href = "'.$url.'";
+		},60000);</script>';
 }
