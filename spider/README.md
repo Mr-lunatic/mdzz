@@ -18,6 +18,12 @@
 
 如果没有设置让蜘蛛无限爬，就用浏览器直接挂着`spider.php?m=auto`（也可以在spider.php中点击[瞎几把爬爬]），想停下来就直接关掉这个页面。
 
+还可以添加cron作业来驱动蜘蛛。
+如通过HTTP请求
+```
+curl "http://example/spider.php?pass={config.php中的密码}&m=auto"
+```
+
 ## 搜索页面
 
 你认为蜘蛛爬得足够深了后，直接在`index.php`打开即可看到搜索界面。

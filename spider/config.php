@@ -5,11 +5,7 @@ $keepclimbing = false;//一直爬行直到达到最长爬行时间
 $searchlimit = 15;//每页搜索限制N条
 $password = "admin888";//蜘蛛的密码
 ignore_user_abort(true);//关掉页面也会继续执行
-if ($is_spider) {
-	set_time_limit(30);//蜘蛛最长爬行时间 单位 秒
-}else{
-	set_time_limit(15);
-}
+set_time_limit(30);
 $dbhost = "localhost";
 $username = "root";
 $userpass = "root";
@@ -40,4 +36,9 @@ function htmlinfo($str){
 '.$str.'
 </body>
 </html>';
+}
+function jsgo($url,$timeout=3000){
+	echo '<script>setTimeout(function(){
+			window.location.href = "'.$url.'";
+		},'.$timeout.')</script>';
 }

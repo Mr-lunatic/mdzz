@@ -9,18 +9,18 @@
 <?php
 
 error_reporting(E_ALL ^ E_NOTICE);
-$is_spider = true;
 include 'config.php';
 
 session_start();
 if ($_GET['m'] == "logout") {
 	$_SESSION['pass'] = "x";
+	jsgo("?");
 	exit('已登出...');
 }
-if ($_POST['pass'] == $password) {
-	$_SESSION['pass'] = $password;	
+if ($_POST['pass']) {
+	$_SESSION['pass'] = $_POST['pass'];
 }
-if ($_SESSION['pass'] !== $password) :
+if ($_SESSION['pass'] !== $password && $_GET['pass'] !== $password) :
 ?>
 <form action="" method="post">
 	<input type="password" name="pass">
@@ -31,7 +31,6 @@ if ($_SESSION['pass'] !== $password) :
 <?php
 exit();
 endif;
-
 if ($_GET['m'] == "install") :
 $rs = $db->query("CREATE TABLE IF NOT EXISTS `jb_spider`(
    `id` INT UNSIGNED AUTO_INCREMENT,
@@ -58,7 +57,8 @@ ADD FULLTEXT (html);");
 if (!$rs) {
 	exit("FULLTEXT Error !");
 }
-exit("安装完毕 !");
+jsgo("?");
+exit("安装完毕 ! 3秒后自动跳转");
 endif;
 
 if ($_GET['m'] == "manadata") {
@@ -73,7 +73,8 @@ HAVING COUNT(*) > 1
 	$db->query('ALTER TABLE `jb_spider` DROP `id`;ALTER TABLE `jb_spider` ADD `id` int NOT NULL FIRST;ALTER TABLE `jb_spider` MODIFY COLUMN `id` int NOT NULL AUTO_INCREMENT,ADD PRIMARY KEY(id);');
 	$db->query("truncate table jb_spider_urls");
 	$db->query('ALTER TABLE `jb_spider_urls` DROP `id`;ALTER TABLE `jb_spider_urls` ADD `id` int NOT NULL FIRST;ALTER TABLE `jb_spider_urls` MODIFY COLUMN `id` int NOT NULL AUTO_INCREMENT,ADD PRIMARY KEY(id);');
-	exit('数据整理完成');
+	jsgo("?");
+	exit('数据整理完成，3秒后自动跳转');
 }
 
 if (!$_GET['u'] && !$_GET['m']) {
@@ -324,13 +325,7 @@ function diffbtw2d($day1, $day2){
 if (!$keepclimbing) {
 	file_put_contents("s/lastclimb", date("Y-m-d H:i:s"));
 }
+jsgo("",5000);
 ?>
-<script type="text/javascript">
-window.onload=function(){
-	setTimeout(function(){
-		window.location.href = "?m=auto";
-	},5000);
-}
-</script>
 </body>
 </html>
