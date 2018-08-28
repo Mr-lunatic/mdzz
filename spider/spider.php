@@ -137,6 +137,18 @@ if (count($is_html[0]) == 0) {
 
 unset($is_html);
 
+//检测编码
+preg_match("/<meta.*?charset=.{0,1}(.*?)[;|\"|']/i", $html, $htmlencoding);
+$htmlencoding = strtoupper($htmlencoding[1]);
+if (empty($htmlencoding)) {
+	$htmlencoding = "UTF-8";
+}
+if ($htmlencoding !== "UTF-8") {
+	$html = iconv($htmlencoding, "UTF-8//IGNORE", $html);
+}
+
+unset($htmlencoding);
+
 //去除curl输出的头部和第一个标签
 $html = preg_replace("/^HTTP.*?\s</s", "<", $html);
 
@@ -196,11 +208,6 @@ unset($tmp_values,$tmp_spr);
 endif;
 
 $html = str_replace(PHP_EOL, "", $html);
-preg_match("/<meta.*?charset=.{0,1}(.*?)[;|\"|']/i", $html, $htmlencoding);
-$htmlencoding = strtoupper($htmlencoding[1]);
-if (empty($htmlencoding)) {
-	$htmlencoding = "UTF-8";
-}
 preg_match("/<title>(.*?)<\/title>/i", $html, $htmltitle);
 $htmltitle = $htmltitle[1];
 $tmp_title = str_replace(" ", "", $htmltitle);
@@ -211,9 +218,6 @@ unset($tmp_title);
 $html = preg_replace("/\s+/", " ", $html);
 $html = preg_replace("/<(style|script).*?>.*?<\/(style|script)>/i", "", $html);
 $html = preg_replace("/<(.*?)>/", "", $html);
-if ($htmlencoding !== "UTF-8") {
-	$html = iconv($htmlencoding, "UTF-8//IGNORE", $html);
-}
 
 if ($db->query("SELECT url FROM jb_spider WHERE url='".$pageurl."'")->num_rows == 0 || diffbtw2d($db->query("SELECT date FROM jb_spider WHERE url='".$pageurl."'")->fetch_row()[0],date("Y-m-d")) > 30) {
 //库中不存在 或者 很久没爬过的链接
