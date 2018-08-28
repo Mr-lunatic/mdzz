@@ -1,6 +1,5 @@
 $(function(){
 
-
 wd = $("input[name=s]").val().split(" ");
 for (var i = 0; i < wd.length; i++) {
 	$(".title").each(function(){

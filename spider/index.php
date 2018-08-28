@@ -36,7 +36,7 @@ $wd = htmlspecialchars(urldecode($_GET['s']));
 <?php endif ?>
 <form action="" method="get">
 	<input type="input" name="s" value="<?php echo $wd ?>">
-	<button type="submit">[search]</button>
+	<button type="submit">立即搜索</button>
 </form>
 
 <?php

@@ -7,25 +7,19 @@ max-width: 800px;margin: 0 auto;}
 	margin-top: 15px;
 }
 form{
-	padding: 2px;
 	display: table;
-	background-color: #f7f7f7;
 	margin: 20px auto;
-	border-radius: 2px;
-	box-shadow: 0 0 5px #c5c5c5;
 }
 input,button{
-	padding: 5px 8px;
-	margin: 4px;
+	padding: 6px 9px;
+	margin: 3px;
 	border: 1px solid #b7b7b7;
-	border-radius: 2px;
-	font-size: 0.8em;
 	font-family: inherit;
 }
 button{
-	background: #4cc7ff;
+	background: #48a7f3;
 	color: #fff;
-	border: 1px solid #00a5ef;
+	border: 1px solid #1463a2;
 }
 .content{
 	font-size: 0.9em;
@@ -82,7 +76,7 @@ span.mark{
 	color: #c00;
 	font-weight: bold;
 }
-input{width: 400px}
+input{width: 350px}
 @media screen and (max-width: 555px){
 	input{width: 300px}
 }
