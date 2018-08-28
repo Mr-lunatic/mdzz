@@ -70,8 +70,15 @@ GROUP BY html
 HAVING COUNT(*) > 1
 ) AS a
 ) LIMIT 1;');
+	if (!empty($sitelimit[0])) {
+		//检查数据库中多余的不爬的链接
+		for ($i=0; $i < count($sitelimit); $i++) { 
+			$tmp_spr = $i == 0 ? "" :" AND";
+			$tmp_del .= $tmp_spr." url NOT LIKE '%".$sitelimit[$i]."%'";
+		}
+		$db->query('DELETE FROM jb_spider_urls WHERE '.$tmp_del);
+	}
 	$db->query('ALTER TABLE `jb_spider` DROP `id`;ALTER TABLE `jb_spider` ADD `id` int NOT NULL FIRST;ALTER TABLE `jb_spider` MODIFY COLUMN `id` int NOT NULL AUTO_INCREMENT,ADD PRIMARY KEY(id);');
-	$db->query("truncate table jb_spider_urls");
 	$db->query('ALTER TABLE `jb_spider_urls` DROP `id`;ALTER TABLE `jb_spider_urls` ADD `id` int NOT NULL FIRST;ALTER TABLE `jb_spider_urls` MODIFY COLUMN `id` int NOT NULL AUTO_INCREMENT,ADD PRIMARY KEY(id);');
 	jsgo("?");
 	exit('数据整理完成，3秒后自动跳转');
@@ -85,7 +92,7 @@ if (!$_GET['u'] && !$_GET['m']) {
 </form>
 <br />
 <button type="button" onclick="window.location.href='?m=auto'"> [瞎几把爬爬] </button>
-<button type="button" onclick="window.location.href='?m=manadata'"> [整理数据并清空爬行表] </button>
+<button type="button" onclick="window.location.href='?m=manadata'"> [整理数据] </button>
 <button type="button" onclick="window.location.href='?m=logout'"> [登出] </button>
 <br /><br />
 剩余链接：
